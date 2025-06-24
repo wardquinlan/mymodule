@@ -1,4 +1,4 @@
-obj-m += mymodule.o
+obj-m += mymodule.o mydevice.o
 
 
 all:
