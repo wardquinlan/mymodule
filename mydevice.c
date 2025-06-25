@@ -46,17 +46,22 @@ static int __init custom_init(void)
 	printk(KERN_INFO "assigned major number %d\n", major);
 
 	// allocate the class
-	printk(KERN_INFO "allocating class\n");
+	printk(KERN_INFO "creating class\n");
 	cls = class_create(DEVICE_NAME);
 
-	printk(KERN_INFO "my kernel device loaded\n");
+	printk(KERN_INFO "creating device\n");
+	device_create(cls, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
+
+	printk(KERN_INFO "my kernel device created on /dev/%s\n", DEVICE_NAME);
 	return 0;
 }
 
 static void __exit custom_exit(void)
 {
-	//device_destroy(cls, MKDEV(major, 0)); 
-	printk(KERN_INFO "releasing class\n");
+	printk(KERN_INFO "destroying device\n");
+	device_destroy(cls, MKDEV(major, 0)); 
+
+	printk(KERN_INFO "destroying class\n");
 	class_destroy(cls); 
 
 	printk(KERN_INFO "my kernel device unloaded\n");
