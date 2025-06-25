@@ -5,15 +5,12 @@
 #include <linux/proc_fs.h>// Module metadata
 
 MODULE_AUTHOR("Ward Quinlan");
-MODULE_DESCRIPTION("My first kernel module");
+MODULE_DESCRIPTION("My first kernel device");
 MODULE_LICENSE("GPL");// Custom init and exit methods
 
 // Based on sample code taken from:
 //
-// https://medium.com/dvt-engineering/how-to-write-your-first-linux-kernel-module-cf284408beeb
-// https://stackoverflow.com/questions/8516021/proc-create-example-for-kernel-module
-
-static struct proc_dir_entry* proc_entry;
+// https://sysprog21.github.io/lkmpg/#the-fileoperations-structure
 
 static ssize_t custom_read(struct file* file, char __user* user_buffer, size_t count, loff_t* offset)
 {
@@ -32,22 +29,19 @@ static ssize_t custom_read(struct file* file, char __user* user_buffer, size_t c
 	return greeting_length;
 }
 
-static struct proc_ops pops =
-{
-	.proc_read = custom_read
-};
+static struct file_operations chardev_fops = { 
+    .read = custom_read, 
+}; 
 
 static int __init custom_init(void)
 {
-	printk(KERN_INFO "My kernel module loaded\n");
-	proc_entry = proc_create("mymodule", 0666, NULL, &pops);
+	printk(KERN_INFO "My kernel device loaded\n");
 	return 0;
 }
 
 static void __exit custom_exit(void)
 {
-	proc_remove(proc_entry);
-	printk(KERN_INFO "My kernel module unloaded\n");
+	printk(KERN_INFO "My kernel device unloaded\n");
 }
 
 module_init(custom_init);
